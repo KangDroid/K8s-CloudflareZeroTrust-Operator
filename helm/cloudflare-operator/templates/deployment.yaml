@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    operator-deployment: cloudflarezerotrustoperator
+  name: operator
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      operator: cloudflarezerotrustoperator
+  template:
+    metadata:
+      labels:
+        operator: cloudflarezerotrustoperator
+    spec:
+      initContainers:
+      - name: check-secrets
+        image: busybox:latest
+        command: ['sh', '-c', 'until [ -f /cert/ca.crt ] && [ -f /cert/tls.crt ] && [ -f /cert/tls.key ]; do echo "Waiting for secrets to be mounted"; sleep 2; done;']
+        volumeMounts:
+        - name: generated-certificates
+          mountPath: /cert
+          readOnly: true
+      containers:
+        - name: cloudflare-operator
+          image: kangdroid/cloudflare-operator:latest
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KESTREL__ENDPOINTS__HTTP__URL
+              value: 'http://0.0.0.0:5000'
+            - name: KESTREL__ENDPOINTS__HTTPS__URL
+              value: 'https://0.0.0.0:5001'
+            - name: KESTREL__ENDPOINTS__HTTPS__CERTIFICATE__PATH
+              value: '/certs/tls.crt'
+            - name: KESTREL__ENDPOINTS__HTTPS__CERTIFICATE__KEYPATH
+              value: '/certs/tls.key'
+          ports:
+            - containerPort: 5000
+              name: http
+            - containerPort: 5001
+              name: https
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - mountPath: /certs
+              name: generated-certificates
+              readOnly: true
+      volumes:
+        - name: generated-certificates
+          secret:
+            secretName: root-secret

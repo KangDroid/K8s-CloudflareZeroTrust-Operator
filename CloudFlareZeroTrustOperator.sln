@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFlareZeroTrustOperator", "CloudFlareZeroTrustOperator\CloudFlareZeroTrustOperator.csproj", "{906A18D2-6CF9-4661-A1DF-DC965CB90C64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudflareSDK", "CloudflareSDK\CloudflareSDK.csproj", "{E0F5E867-5CAA-4EF5-885B-49579B04493B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{906A18D2-6CF9-4661-A1DF-DC965CB90C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{906A18D2-6CF9-4661-A1DF-DC965CB90C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{906A18D2-6CF9-4661-A1DF-DC965CB90C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{906A18D2-6CF9-4661-A1DF-DC965CB90C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0F5E867-5CAA-4EF5-885B-49579B04493B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0F5E867-5CAA-4EF5-885B-49579B04493B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0F5E867-5CAA-4EF5-885B-49579B04493B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0F5E867-5CAA-4EF5-885B-49579B04493B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+      <UserSecretsId>34fa71f1-fd76-4e36-b359-82f11fef759b</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="KubeOps" Version="7.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CloudflareSDK\CloudflareSDK.csproj" />
+    </ItemGroup>
+    
+    <PropertyGroup>
+        <KubeOpsSkipDockerfile>""</KubeOpsSkipDockerfile>
+        <KubeOpsSkipCrds>""</KubeOpsSkipCrds>
+        <KubeOpsSkipRbac>""</KubeOpsSkipRbac>
+        <KubeOpsSkipOperator>""</KubeOpsSkipOperator>
+        <KubeOpsSkipInstaller>""</KubeOpsSkipInstaller>
+    </PropertyGroup>
+
+</Project>
