@@ -53,7 +53,7 @@ public class CloudflareDnsService
 
         // Get DNS Records
         var response = await _cloudflareClient.DnsRecords.ListDnsRecordsAsync(spec.Zone, spec.ApiKey);
-        var dnsRecords = response.Result.FirstOrDefault(a => a.Name == $"{spec.Name}.${zoneDetails.Result.Name}");
+        var dnsRecords = response.Result.FirstOrDefault(a => a.Name == $"{spec.Name}.{zoneDetails.Result.Name}");
 
         if (dnsRecords != null)
         {

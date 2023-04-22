@@ -9,7 +9,7 @@ rules:
   - ""
   - coordination.k8s.io
   resources:
-  - cloudflarednsrecords
+  - dnsrecords
   - statefulsets
   - services
   - secrets
@@ -34,7 +34,7 @@ rules:
 - apiGroups:
   - cloudflare.dns.kangdroid.dev
   resources:
-  - cloudflarednsrecords/status
+  - dnsrecords/status
   verbs:
   - get
   - patch

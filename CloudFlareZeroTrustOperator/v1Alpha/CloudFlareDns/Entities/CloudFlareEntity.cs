@@ -6,8 +6,8 @@ using KubeOps.Operator.Entities;
 
 namespace CloudFlareZeroTrustOperator.v1Alpha.CloudFlareDns.Entities;
 
-[KubernetesEntity(Group = "cloudflare.dns.kangdroid.dev", ApiVersion = "v1alpha", Kind = "cloudflarednsrecord",
-    PluralName = "cloudflarednsrecords")]
+[KubernetesEntity(Group = "cloudflare.dns.kangdroid.dev", ApiVersion = "v1alpha", Kind = "dnsrecord",
+    PluralName = "dnsrecords")]
 public class CloudFlareEntity : CustomKubernetesEntity<CloudflareEntitySpec, List<CloudFlareEntity.CloudflareDnsEntityStatus>>
 {
     public ReconcileStatus ToReconcileStatus()
