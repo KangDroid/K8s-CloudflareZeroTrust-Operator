@@ -11,7 +11,23 @@ spec:
     singular: dnsrecord
   scope: Namespaced
   versions:
-  - name: v1alpha
+  - additionalPrinterColumns:
+    - description: Type of the DNS Record
+      jsonPath: .spec.dnsRecordConfig.type
+      name: Type
+      priority: 0
+      type: string
+    - description: DNS Management Name(IP Address when type = a, CNAME when type = CNAME) of the DNS Record
+      jsonPath: .spec.dnsRecordConfig.name
+      name: DNS Record Name
+      priority: 0
+      type: string
+    - description: DNS Content(Target)
+      jsonPath: .spec.dnsRecordConfig.content
+      name: Content
+      priority: 0
+      type: string
+    name: v1alpha
     schema:
       openAPIV3Schema:
         properties:
@@ -46,6 +62,7 @@ spec:
                       - RecordUpdated
                       - RecordAlreadySynced
                       - RecordNotExists
+                      - SecretInvalid
                       type: string
                     response:
                       type: string

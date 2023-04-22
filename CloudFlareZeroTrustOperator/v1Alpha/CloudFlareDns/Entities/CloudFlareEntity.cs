@@ -3,11 +3,16 @@ using CloudFlareZeroTrustOperator.Shared.Models.Internal;
 using CloudFlareZeroTrustOperator.v1Alpha.CloudFlareDns.Models.Internal;
 using k8s.Models;
 using KubeOps.Operator.Entities;
+using KubeOps.Operator.Entities.Annotations;
 
 namespace CloudFlareZeroTrustOperator.v1Alpha.CloudFlareDns.Entities;
 
 [KubernetesEntity(Group = "cloudflare.dns.kangdroid.dev", ApiVersion = "v1alpha", Kind = "dnsrecord",
     PluralName = "dnsrecords")]
+[GenericAdditionalPrinterColumn(".spec.dnsRecordConfig.type", "Type", "string", Description = "Type of the DNS Record")]
+[GenericAdditionalPrinterColumn(".spec.dnsRecordConfig.name", "DNS Record Name", "string",
+    Description = "DNS Management Name(IP Address when type = a, CNAME when type = CNAME) of the DNS Record")]
+[GenericAdditionalPrinterColumn(".spec.dnsRecordConfig.content", "Content", "string", Description = "DNS Content(Target)")]
 public class CloudFlareEntity : CustomKubernetesEntity<CloudflareEntitySpec, CloudFlareEntity.DnsEntityStatus>
 {
     public ReconcileStatus ToReconcileStatus()
