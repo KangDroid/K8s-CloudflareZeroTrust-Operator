@@ -17,20 +17,41 @@ spec:
         properties:
           status:
             description: Status object for the entity.
-            items:
-              properties:
-                lastSynced:
-                  format: date-time
-                  type: string
-                syncStatus:
-                  enum:
-                  - RecordCreated
-                  - RecordAlreadySynced
-                  type: string
-                response:
-                  type: string
-              type: object
-            type: array
+            properties:
+              lastConfiguration:
+                properties:
+                  content:
+                    type: string
+                  name:
+                    type: string
+                  proxied:
+                    type: boolean
+                  type:
+                    type: string
+                  comment:
+                    type: string
+                  ttl:
+                    format: int32
+                    type: integer
+                type: object
+              syncLog:
+                items:
+                  properties:
+                    lastSynced:
+                      format: date-time
+                      type: string
+                    syncStatus:
+                      enum:
+                      - RecordCreated
+                      - RecordUpdated
+                      - RecordAlreadySynced
+                      - RecordNotExists
+                      type: string
+                    response:
+                      type: string
+                  type: object
+                type: array
+            type: object
           spec:
             description: Specification of the kubernetes object.
             properties:
@@ -40,19 +61,22 @@ spec:
                 type: string
               apiKey:
                 type: string
-              content:
-                type: string
-              name:
-                type: string
-              proxied:
-                type: boolean
-              type:
-                type: string
-              comment:
-                type: string
-              ttl:
-                format: int32
-                type: integer
+              dnsRecordConfig:
+                properties:
+                  content:
+                    type: string
+                  name:
+                    type: string
+                  proxied:
+                    type: boolean
+                  type:
+                    type: string
+                  comment:
+                    type: string
+                  ttl:
+                    format: int32
+                    type: integer
+                type: object
             type: object
         type: object
     served: true

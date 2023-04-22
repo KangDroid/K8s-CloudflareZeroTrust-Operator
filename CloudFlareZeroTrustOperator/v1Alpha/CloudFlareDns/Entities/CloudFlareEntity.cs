@@ -8,20 +8,20 @@ namespace CloudFlareZeroTrustOperator.v1Alpha.CloudFlareDns.Entities;
 
 [KubernetesEntity(Group = "cloudflare.dns.kangdroid.dev", ApiVersion = "v1alpha", Kind = "dnsrecord",
     PluralName = "dnsrecords")]
-public class CloudFlareEntity : CustomKubernetesEntity<CloudflareEntitySpec, List<CloudFlareEntity.CloudflareDnsEntityStatus>>
+public class CloudFlareEntity : CustomKubernetesEntity<CloudflareEntitySpec, CloudFlareEntity.DnsEntityStatus>
 {
     public ReconcileStatus ToReconcileStatus()
     {
-        if (Status.Count == 0)
+        if (Status.SyncLog.Count == 0)
         {
             return ReconcileStatus.NeedsCreation;
         }
 
         var currentTime = DateTime.UtcNow;
-        var lastSynced = Status.MaxBy(a => a.LastSynced)!.LastSynced;
+        var lastSynced = Status.SyncLog.MaxBy(a => a.LastSynced)!.LastSynced;
         var timeDiff = currentTime - lastSynced;
 
-        if (timeDiff.TotalMinutes > 30)
+        if (timeDiff.TotalMinutes > 30 || !Equals(Spec.DnsRecordConfig, Status.LastConfiguration))
         {
             return ReconcileStatus.NeedsUpdate;
         }
@@ -29,11 +29,10 @@ public class CloudFlareEntity : CustomKubernetesEntity<CloudflareEntitySpec, Lis
         return ReconcileStatus.Skip;
     }
 
-    public class CloudflareDnsEntityStatus
+    public class DnsEntityStatus
     {
-        public DateTime LastSynced { get; set; } = DateTime.MinValue;
-        public DnsRecordSyncStatus SyncStatus { get; set; }
-        public string Response { get; set; } // Response from Cloudflare
+        public DnsRecordConfiguration LastConfiguration { get; set; }
+        public List<DnsRecordSyncLog> SyncLog { get; set; } = new();
     }
 }
 
@@ -43,6 +42,18 @@ public class CloudflareEntitySpec
     public string Zone { get; set; }
     public string ApiKey { get; set; }
 
+    public DnsRecordConfiguration DnsRecordConfig { get; set; }
+}
+
+public class DnsRecordSyncLog
+{
+    public DateTime LastSynced { get; set; } = DateTime.MinValue;
+    public DnsRecordSyncStatus SyncStatus { get; set; }
+    public string Response { get; set; } // Response from Cloudflare 
+}
+
+public class DnsRecordConfiguration
+{
     /// <summary>
     ///     A valid IPv4 address.
     /// </summary>
@@ -85,5 +96,20 @@ public class CloudflareEntitySpec
             Comment = Comment,
             Ttl = Ttl
         };
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not DnsRecordConfiguration other)
+        {
+            return false;
+        }
+
+        return Content == other.Content
+               && Name == other.Name
+               && Proxied == other.Proxied
+               && Type == other.Type
+               && Comment == other.Comment
+               && Ttl == other.Ttl;
     }
 }

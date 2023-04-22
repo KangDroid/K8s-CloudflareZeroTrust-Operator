@@ -41,4 +41,11 @@ public class DnsRecordClient
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiToken);
         await _httpClient.DeleteAsync($"client/v4/zones/{zoneId}/dns_records/{dnsId}");
     }
+
+    public async Task UpdateDnsRecordAsync(string zoneId, string dnsId, string apiToken,
+                                           DnsRecordCreationRequest dnsRecordUpdateRequest)
+    {
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiToken);
+        await _httpClient.PutAsJsonAsync($"client/v4/zones/{zoneId}/dns_records/{dnsId}", dnsRecordUpdateRequest);
+    }
 }

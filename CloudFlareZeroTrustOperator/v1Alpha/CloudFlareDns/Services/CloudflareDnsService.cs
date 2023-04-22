@@ -16,19 +16,21 @@ public class CloudflareDnsService
         _logger = cloudflareDnsService;
     }
 
-    public async Task<CloudFlareEntity.CloudflareDnsEntityStatus> AddDnsRecordIfNotExistsAsync(
+    public async Task<DnsRecordSyncLog> AddDnsRecordIfNotExistsAsync(
         CloudflareEntitySpec entitySpec, ReconcileStatus reconcileStatus)
     {
-        _logger.LogInformation("Entity {0} called reconciliation, Reason: {1}", entitySpec.Name, reconcileStatus.ToString());
+        _logger.LogInformation("Entity {0} called reconciliation, Reason: {1}", entitySpec.DnsRecordConfig.Name,
+            reconcileStatus.ToString());
         var zoneDetails = await _cloudflareClient.Zones.GetZoneDetailsAsync(entitySpec.Zone, entitySpec.ApiKey);
         var dnsRecords = await _cloudflareClient.DnsRecords.ListDnsRecordsAsync(entitySpec.Zone, entitySpec.ApiKey);
-        var targetDnsRecord = dnsRecords.Result.FirstOrDefault(a => a.Name == $"{entitySpec.Name}.${zoneDetails.Result.Name}");
+        var targetDnsRecord =
+            dnsRecords.Result.FirstOrDefault(a => a.Name == $"{entitySpec.DnsRecordConfig.Name}.{zoneDetails.Result.Name}");
 
         if (targetDnsRecord == null)
         {
             await _cloudflareClient.DnsRecords.CreateDnsRecordAsync(entitySpec.Zone, entitySpec.ApiKey,
-                entitySpec.ToRequest());
-            return new CloudFlareEntity.CloudflareDnsEntityStatus
+                entitySpec.DnsRecordConfig.ToRequest());
+            return new DnsRecordSyncLog
             {
                 LastSynced = DateTime.UtcNow,
                 Response = "",
@@ -36,7 +38,7 @@ public class CloudflareDnsService
             };
         }
 
-        return new CloudFlareEntity.CloudflareDnsEntityStatus
+        return new DnsRecordSyncLog
         {
             LastSynced = DateTime.UtcNow,
             Response = "",
@@ -46,14 +48,15 @@ public class CloudflareDnsService
 
     public async Task DeleteDnsRecordIfExists(CloudflareEntitySpec spec)
     {
-        _logger.LogInformation("Entity {0} called deletion", spec.Name);
+        _logger.LogInformation("Entity {0} called deletion", spec.DnsRecordConfig.Name);
 
         // Get Zone Details
         var zoneDetails = await _cloudflareClient.Zones.GetZoneDetailsAsync(spec.Zone, spec.ApiKey);
 
         // Get DNS Records
         var response = await _cloudflareClient.DnsRecords.ListDnsRecordsAsync(spec.Zone, spec.ApiKey);
-        var dnsRecords = response.Result.FirstOrDefault(a => a.Name == $"{spec.Name}.{zoneDetails.Result.Name}");
+        var dnsRecords =
+            response.Result.FirstOrDefault(a => a.Name == $"{spec.DnsRecordConfig.Name}.{zoneDetails.Result.Name}");
 
         if (dnsRecords != null)
         {
@@ -63,7 +66,39 @@ public class CloudflareDnsService
         }
         else
         {
-            _logger.LogInformation("Operator Controller did not found DNS Record name: {0}, skipping..", spec.Name);
+            _logger.LogInformation("Operator Controller did not found DNS Record name: {0}, skipping..",
+                spec.DnsRecordConfig.Name);
         }
+    }
+
+    public async Task<DnsRecordSyncLog> UpdateDnsRecordAsync(DnsRecordConfiguration oldConfig,
+                                                             CloudflareEntitySpec entitySpec)
+    {
+        var zoneDetails = await _cloudflareClient.Zones.GetZoneDetailsAsync(entitySpec.Zone, entitySpec.ApiKey);
+        var dnsRecords = await _cloudflareClient.DnsRecords.ListDnsRecordsAsync(entitySpec.Zone, entitySpec.ApiKey);
+        var targetDnsRecord =
+            dnsRecords.Result.FirstOrDefault(a => a.Name == $"{oldConfig.Name}.{zoneDetails.Result.Name}");
+        _logger.LogInformation("DnsRecord tried to find: {0}", $"{oldConfig.Name}.{zoneDetails.Result.Name}");
+
+        if (targetDnsRecord == null)
+        {
+            _logger.LogError("Cannot update dns record since it does not exist");
+            return new DnsRecordSyncLog
+            {
+                LastSynced = DateTime.UtcNow,
+                SyncStatus = DnsRecordSyncStatus.RecordNotExists,
+                Response = ""
+            };
+        }
+
+        await _cloudflareClient.DnsRecords.UpdateDnsRecordAsync(entitySpec.Zone, targetDnsRecord.Id, entitySpec.ApiKey,
+            entitySpec.DnsRecordConfig.ToRequest());
+
+        return new DnsRecordSyncLog
+        {
+            LastSynced = DateTime.UtcNow,
+            SyncStatus = DnsRecordSyncStatus.RecordUpdated,
+            Response = ""
+        };
     }
 }

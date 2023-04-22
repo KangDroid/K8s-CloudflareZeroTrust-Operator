@@ -32,13 +32,23 @@ public class CloudflareDnsController : IResourceController<CloudFlareEntity>
     {
         var reconcileStatus = entity.ToReconcileStatus();
 
-        if (reconcileStatus == ReconcileStatus.Skip)
+        switch (reconcileStatus)
         {
-            return null;
+            case ReconcileStatus.NeedsCreation:
+                entity.Status.SyncLog.Add(
+                    await _cloudflareDnsService.AddDnsRecordIfNotExistsAsync(entity.Spec, reconcileStatus));
+                entity.Status.LastConfiguration = entity.Spec.DnsRecordConfig;
+                await _kubernetesClient.UpdateStatus(entity);
+                break;
+            case ReconcileStatus.NeedsUpdate:
+                entity.Status.SyncLog.Add(
+                    await _cloudflareDnsService.UpdateDnsRecordAsync(entity.Status.LastConfiguration, entity.Spec));
+                entity.Status.LastConfiguration = entity.Spec.DnsRecordConfig;
+                await _kubernetesClient.UpdateStatus(entity);
+                break;
+            case ReconcileStatus.Skip:
+                break;
         }
-
-        entity.Status.Add(await _cloudflareDnsService.AddDnsRecordIfNotExistsAsync(entity.Spec, reconcileStatus));
-        await _kubernetesClient.UpdateStatus(entity);
 
         return null;
     }
