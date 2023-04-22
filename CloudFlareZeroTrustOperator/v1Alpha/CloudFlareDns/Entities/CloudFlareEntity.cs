@@ -38,10 +38,7 @@ public class CloudFlareEntity : CustomKubernetesEntity<CloudflareEntitySpec, Clo
 
 public class CloudflareEntitySpec
 {
-    public string AccountId { get; set; }
-    public string Zone { get; set; }
-    public string ApiKey { get; set; }
-
+    public CloudflareSecretReference CloudflareSecretRef { get; set; }
     public DnsRecordConfiguration DnsRecordConfig { get; set; }
 }
 

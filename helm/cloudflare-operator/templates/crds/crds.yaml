@@ -55,12 +55,11 @@ spec:
           spec:
             description: Specification of the kubernetes object.
             properties:
-              accountId:
-                type: string
-              zone:
-                type: string
-              apiKey:
-                type: string
+              cloudflareSecretRef:
+                properties:
+                  name:
+                    type: string
+                type: object
               dnsRecordConfig:
                 properties:
                   content:

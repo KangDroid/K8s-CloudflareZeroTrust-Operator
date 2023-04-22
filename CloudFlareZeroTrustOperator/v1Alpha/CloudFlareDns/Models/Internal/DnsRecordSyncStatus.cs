@@ -5,5 +5,6 @@ public enum DnsRecordSyncStatus
     RecordCreated,
     RecordUpdated,
     RecordAlreadySynced,
-    RecordNotExists
+    RecordNotExists,
+    SecretInvalid
 }
