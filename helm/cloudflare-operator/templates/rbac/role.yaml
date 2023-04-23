@@ -4,15 +4,17 @@ metadata:
   name: operator-role
 rules:
 - apiGroups:
-  - cloudflare.dns.kangdroid.dev
+  - cloudflare.tunnel.kangdroid.dev
   - apps
   - ""
+  - cloudflare.dns.kangdroid.dev
   - coordination.k8s.io
   resources:
-  - dnsrecords
+  - tunnelconfigurations
   - statefulsets
   - services
   - secrets
+  - dnsrecords
   - leases
   verbs:
   - '*'
@@ -32,9 +34,9 @@ rules:
   - list
   - update
 - apiGroups:
-  - cloudflare.dns.kangdroid.dev
+  - cloudflare.tunnel.kangdroid.dev
   resources:
-  - dnsrecords/status
+  - tunnelconfigurations/status
   verbs:
   - get
   - patch
@@ -59,6 +61,14 @@ rules:
   - ""
   resources:
   - services/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - cloudflare.dns.kangdroid.dev
+  resources:
+  - dnsrecords/status
   verbs:
   - get
   - patch
