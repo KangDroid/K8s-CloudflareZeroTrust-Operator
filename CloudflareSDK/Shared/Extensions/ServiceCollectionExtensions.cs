@@ -1,4 +1,5 @@
 using CloudflareSDK.DnsRecords;
+using CloudflareSDK.TunnelConfiguration;
 using CloudflareSDK.Zones;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,7 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddTransient<ZoneClient>();
         serviceCollection.AddTransient<DnsRecordClient>();
+        serviceCollection.AddTransient<TunnelConfigurationClient>();
         serviceCollection.AddSingleton<CloudflareClient>();
 
         return serviceCollection;
