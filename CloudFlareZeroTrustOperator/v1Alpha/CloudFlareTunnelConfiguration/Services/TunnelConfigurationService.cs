@@ -1,6 +1,7 @@
 using CloudflareSDK;
 using CloudflareSDK.TunnelConfiguration.Models.Common;
 using CloudFlareZeroTrustOperator.Shared.Models.Internal;
+using CloudFlareZeroTrustOperator.v1Alpha.CloudFlareDns.Entities;
 using CloudFlareZeroTrustOperator.v1Alpha.CloudFlareTunnelConfiguration.Entities;
 using k8s.Models;
 using KubeOps.KubernetesClient;
@@ -78,6 +79,12 @@ public class TunnelConfigurationService
                 LastSyncOperation = SyncOps.Created
             }
         };
+
+        if (entity.Spec.CreateDnsEntry)
+        {
+            await CreateDnsEntryAsync(entity);
+        }
+
         entity.Status.LastConfiguration = entity.Spec.TunnelConfig;
         await _kubernetesClient.UpdateStatus(entity);
     }
@@ -173,14 +180,37 @@ public class TunnelConfigurationService
         tunnelConfigurations.Result.Config.Ingress.Remove(existingIngressConfiguration);
         await _cloudflareClient.TunnelConfiguration.UpdateTunnelConfigurationsAsync(cloudflareSecret.AcocuntId,
             entity.Spec.TunnelConfig.TunnelId, cloudflareSecret.ApiKey, tunnelConfigurations.Result);
-        entity.Status.SyncStatus = new List<TunnelSyncStatus>
+
+        if (entity.Spec.CreateDnsEntry)
         {
-            new()
+            await _kubernetesClient.Delete<CloudFlareEntity>(entity.Name(), entity.Namespace());
+        }
+    }
+
+    private async Task CreateDnsEntryAsync(TunnelConfigurationEntity entity)
+    {
+        await _kubernetesClient.Create(new CloudFlareEntity
+        {
+            ApiVersion = "cloudflare.dns.kangdroid.dev/v1alpha",
+            Kind = "dnsrecord",
+            Metadata = new V1ObjectMeta
             {
-                LastSynced = DateTime.UtcNow,
-                FullDomain = $"{entity.Spec.TunnelConfig.PublicHostSubdomain}.{zoneDetails.Result.Name}",
-                LastSyncOperation = SyncOps.Created
+                Name = entity.Name(),
+                NamespaceProperty = entity.Namespace()
+            },
+            Spec = new CloudflareEntitySpec
+            {
+                CloudflareSecretRef = entity.Spec.CloudflareSecretRef,
+                DnsRecordConfig = new DnsRecordConfiguration
+                {
+                    Name = entity.Spec.TunnelConfig.PublicHostSubdomain,
+                    Content = $"{entity.Spec.TunnelConfig.TunnelId}.cfargotunnel.com",
+                    Proxied = true,
+                    Ttl = 1,
+                    Type = "CNAME",
+                    Comment = "Cloudflare Operator Auto Generated"
+                }
             }
-        };
+        });
     }
 }
