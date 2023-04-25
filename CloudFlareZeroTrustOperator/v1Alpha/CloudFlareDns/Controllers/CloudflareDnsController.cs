@@ -35,14 +35,18 @@ public class CloudflareDnsController : IResourceController<CloudFlareEntity>
         switch (reconcileStatus)
         {
             case ReconcileStatus.NeedsCreation:
-                entity.Status.SyncLog.Add(
-                    await _cloudflareDnsService.AddDnsRecordIfNotExistsAsync(entity, reconcileStatus));
+                entity.Status.SyncLog = new List<DnsRecordSyncLog>
+                {
+                    await _cloudflareDnsService.AddDnsRecordIfNotExistsAsync(entity, reconcileStatus)
+                };
                 entity.Status.LastConfiguration = entity.Spec.DnsRecordConfig;
                 await _kubernetesClient.UpdateStatus(entity);
                 break;
             case ReconcileStatus.NeedsUpdate:
-                entity.Status.SyncLog.Add(
-                    await _cloudflareDnsService.UpdateDnsRecordAsync(entity));
+                entity.Status.SyncLog = new List<DnsRecordSyncLog>
+                {
+                    await _cloudflareDnsService.UpdateDnsRecordAsync(entity)
+                };
                 entity.Status.LastConfiguration = entity.Spec.DnsRecordConfig;
                 await _kubernetesClient.UpdateStatus(entity);
                 break;
