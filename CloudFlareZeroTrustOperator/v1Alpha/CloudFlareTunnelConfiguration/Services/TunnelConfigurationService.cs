@@ -22,7 +22,7 @@ public class TunnelConfigurationService
     public async Task CreateTunnelConfigurationAsync(TunnelConfigurationEntity entity)
     {
         var cloudflareSecret =
-            await CloudflareSecret.FromSecretReference(entity.Spec.CloudflareSecretRef.Name, entity.Namespace(),
+            await CloudflareSecret.FromSecretReference(entity.Spec.CloudflareSecretRef.Name, entity.Spec.CloudflareSecretRef.Namespace,
                 _kubernetesClient);
         if (cloudflareSecret == null)
         {
@@ -92,7 +92,7 @@ public class TunnelConfigurationService
     public async Task UpdateTunnelConfigurationAsync(TunnelConfigurationEntity entity)
     {
         var cloudflareSecret =
-            await CloudflareSecret.FromSecretReference(entity.Spec.CloudflareSecretRef.Name, entity.Namespace(),
+            await CloudflareSecret.FromSecretReference(entity.Spec.CloudflareSecretRef.Name, entity.Spec.CloudflareSecretRef.Namespace,
                 _kubernetesClient);
         if (cloudflareSecret == null)
         {
@@ -157,7 +157,7 @@ public class TunnelConfigurationService
     public async Task DeleteTunnelConfigurationAsync(TunnelConfigurationEntity entity)
     {
         var cloudflareSecret =
-            await CloudflareSecret.FromSecretReference(entity.Spec.CloudflareSecretRef.Name, entity.Namespace(),
+            await CloudflareSecret.FromSecretReference(entity.Spec.CloudflareSecretRef.Name, entity.Spec.CloudflareSecretRef.Namespace,
                 _kubernetesClient);
         if (cloudflareSecret == null)
         {

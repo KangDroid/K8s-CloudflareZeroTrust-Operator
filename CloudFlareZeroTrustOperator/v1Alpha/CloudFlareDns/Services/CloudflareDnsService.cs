@@ -144,7 +144,7 @@ public class CloudflareDnsService
 
     private async Task<(string?, string?)> GetApiKeyAndZoneId(CloudFlareEntity entity)
     {
-        var secretInfo = await _kubernetesClient.Get<V1Secret>(entity.Spec.CloudflareSecretRef.Name, entity.Namespace());
+        var secretInfo = await _kubernetesClient.Get<V1Secret>(entity.Spec.CloudflareSecretRef.Name, entity.Spec.CloudflareSecretRef.Namespace);
 
         if (secretInfo?.Data == null || !secretInfo.Data.ContainsKey("apiKey") || !secretInfo.Data.ContainsKey("zoneId"))
         {

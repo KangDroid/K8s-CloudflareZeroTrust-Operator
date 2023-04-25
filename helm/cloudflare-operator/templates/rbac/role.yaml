@@ -3,73 +3,73 @@ kind: ClusterRole
 metadata:
   name: operator-role
 rules:
-- apiGroups:
-  - cloudflare.tunnel.kangdroid.dev
-  - apps
-  - ""
-  - cloudflare.dns.kangdroid.dev
-  - coordination.k8s.io
-  resources:
-  - tunnelconfigurations
-  - statefulsets
-  - services
-  - secrets
-  - dnsrecords
-  - leases
-  verbs:
-  - '*'
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - '*'
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - get
-  - list
-  - update
-- apiGroups:
-  - cloudflare.tunnel.kangdroid.dev
-  resources:
-  - tunnelconfigurations/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - apps
-  resources:
-  - statefulsets/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - apps
-  resources:
-  - deployments/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - services/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - cloudflare.dns.kangdroid.dev
-  resources:
-  - dnsrecords/status
-  verbs:
-  - get
-  - patch
-  - update
+  - apiGroups:
+      - cloudflare.tunnel.kangdroid.dev
+      - apps
+      - ""
+      - cloudflare.dns.kangdroid.dev
+      - coordination.k8s.io
+    resources:
+      - tunnelconfigurations
+      - statefulsets
+      - services
+      - secrets
+      - dnsrecords
+      - leases
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - '*'
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - get
+      - list
+      - update
+  - apiGroups:
+      - cloudflare.tunnel.kangdroid.dev
+    resources:
+      - tunnelconfigurations/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - services/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - cloudflare.dns.kangdroid.dev
+    resources:
+      - dnsrecords/status
+    verbs:
+      - get
+      - patch
+      - update

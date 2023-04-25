@@ -11,95 +11,97 @@ spec:
     singular: dnsrecord
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - description: Type of the DNS Record
-      jsonPath: .spec.dnsRecordConfig.type
-      name: Type
-      priority: 0
-      type: string
-    - description: DNS Management Name(IP Address when type = a, CNAME when type = CNAME) of the DNS Record
-      jsonPath: .spec.dnsRecordConfig.name
-      name: DNS Record Name
-      priority: 0
-      type: string
-    - description: DNS Content(Target)
-      jsonPath: .spec.dnsRecordConfig.content
-      name: Content
-      priority: 0
-      type: string
-    name: v1alpha
-    schema:
-      openAPIV3Schema:
-        properties:
-          status:
-            description: Status object for the entity.
-            properties:
-              lastConfiguration:
-                properties:
-                  content:
-                    type: string
-                  name:
-                    type: string
-                  proxied:
-                    type: boolean
-                  type:
-                    type: string
-                  comment:
-                    type: string
-                  ttl:
-                    format: int32
-                    type: integer
-                type: object
-              syncLog:
-                items:
+    - additionalPrinterColumns:
+        - description: Type of the DNS Record
+          jsonPath: .spec.dnsRecordConfig.type
+          name: Type
+          priority: 0
+          type: string
+        - description: DNS Management Name(IP Address when type = a, CNAME when type = CNAME) of the DNS Record
+          jsonPath: .spec.dnsRecordConfig.name
+          name: DNS Record Name
+          priority: 0
+          type: string
+        - description: DNS Content(Target)
+          jsonPath: .spec.dnsRecordConfig.content
+          name: Content
+          priority: 0
+          type: string
+      name: v1alpha
+      schema:
+        openAPIV3Schema:
+          properties:
+            status:
+              description: Status object for the entity.
+              properties:
+                lastConfiguration:
                   properties:
-                    lastSynced:
-                      format: date-time
+                    content:
                       type: string
-                    syncStatus:
-                      enum:
-                      - RecordCreated
-                      - RecordUpdated
-                      - RecordAlreadySynced
-                      - RecordNotExists
-                      - SecretInvalid
+                    name:
                       type: string
-                    response:
+                    proxied:
+                      type: boolean
+                    type:
+                      type: string
+                    comment:
+                      type: string
+                    ttl:
+                      format: int32
+                      type: integer
+                  type: object
+                syncLog:
+                  items:
+                    properties:
+                      lastSynced:
+                        format: date-time
+                        type: string
+                      syncStatus:
+                        enum:
+                          - RecordCreated
+                          - RecordUpdated
+                          - RecordAlreadySynced
+                          - RecordNotExists
+                          - SecretInvalid
+                        type: string
+                      response:
+                        type: string
+                    type: object
+                  type: array
+              type: object
+            spec:
+              description: Specification of the kubernetes object.
+              properties:
+                cloudflareSecretRef:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
                       type: string
                   type: object
-                type: array
-            type: object
-          spec:
-            description: Specification of the kubernetes object.
-            properties:
-              cloudflareSecretRef:
-                properties:
-                  name:
-                    type: string
-                type: object
-              dnsRecordConfig:
-                properties:
-                  content:
-                    type: string
-                  name:
-                    type: string
-                  proxied:
-                    type: boolean
-                  type:
-                    type: string
-                  comment:
-                    type: string
-                  ttl:
-                    format: int32
-                    type: integer
-                type: object
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
----
+                dnsRecordConfig:
+                  properties:
+                    content:
+                      type: string
+                    name:
+                      type: string
+                    proxied:
+                      type: boolean
+                    type:
+                      type: string
+                    comment:
+                      type: string
+                    ttl:
+                      format: int32
+                      type: integer
+                  type: object
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
+---  
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -113,73 +115,75 @@ spec:
     singular: tunnelconfiguration
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - description: Public Host Subdomain
-      jsonPath: .status.syncStatus[0].fullDomain
-      name: Hostname
-      priority: 0
-      type: string
-    - description: Service to tunnel to
-      jsonPath: .spec.tunnelConfig.service
-      name: Destination
-      priority: 0
-      type: string
-    name: v1alpha
-    schema:
-      openAPIV3Schema:
-        properties:
-          status:
-            description: Status object for the entity.
-            properties:
-              lastConfiguration:
-                properties:
-                  publicHostSubdomain:
-                    type: string
-                  service:
-                    type: string
-                  tunnelId:
-                    type: string
-                type: object
-              syncStatus:
-                items:
+    - additionalPrinterColumns:
+        - description: Public Host Subdomain
+          jsonPath: .status.syncStatus[0].fullDomain
+          name: Hostname
+          priority: 0
+          type: string
+        - description: Service to tunnel to
+          jsonPath: .spec.tunnelConfig.service
+          name: Destination
+          priority: 0
+          type: string
+      name: v1alpha
+      schema:
+        openAPIV3Schema:
+          properties:
+            status:
+              description: Status object for the entity.
+              properties:
+                lastConfiguration:
                   properties:
-                    lastSynced:
-                      format: date-time
+                    publicHostSubdomain:
                       type: string
-                    lastSyncOperation:
-                      enum:
-                      - Created
-                      - Updated
-                      - Skipped
-                      - Error
+                    service:
                       type: string
-                    fullDomain:
+                    tunnelId:
                       type: string
                   type: object
-                type: array
-            type: object
-          spec:
-            description: Specification of the kubernetes object.
-            properties:
-              createDnsEntry:
-                type: boolean
-              cloudflareSecretRef:
-                properties:
-                  name:
-                    type: string
-                type: object
-              tunnelConfig:
-                properties:
-                  publicHostSubdomain:
-                    type: string
-                  service:
-                    type: string
-                  tunnelId:
-                    type: string
-                type: object
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+                syncStatus:
+                  items:
+                    properties:
+                      lastSynced:
+                        format: date-time
+                        type: string
+                      lastSyncOperation:
+                        enum:
+                          - Created
+                          - Updated
+                          - Skipped
+                          - Error
+                        type: string
+                      fullDomain:
+                        type: string
+                    type: object
+                  type: array
+              type: object
+            spec:
+              description: Specification of the kubernetes object.
+              properties:
+                createDnsEntry:
+                  type: boolean
+                cloudflareSecretRef:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  type: object
+                tunnelConfig:
+                  properties:
+                    publicHostSubdomain:
+                      type: string
+                    service:
+                      type: string
+                    tunnelId:
+                      type: string
+                  type: object
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
